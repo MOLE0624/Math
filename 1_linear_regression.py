@@ -15,6 +15,7 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.random import randn
+from scipy import stats
 
 
 def min_sq(x: jnp.ndarray, y: jnp.ndarray) -> Tuple[jnp.ndarray, jnp.ndarray]:
@@ -93,6 +94,15 @@ def sample2():
     print(jnp.linalg.inv(X.T @ X) @ X.T @ y)
 
 
+def sample3():
+    x = jnp.arange(0, 20, 0.1)
+    for i in range(1, 11):
+        plt.plot(x, stats.chi2.pdf(x, i), label="{}".format(i))
+    plt.legend(loc="upper right")
+    plt.show()
+
+
 if __name__ == "__main__":
     sample()
     sample2()
+    sample3()
