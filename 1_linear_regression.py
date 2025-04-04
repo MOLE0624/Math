@@ -82,5 +82,17 @@ def sample():
     plt.show()
 
 
+def sample2():
+    N = 100
+    # p = 2
+
+    beta = jnp.array([1, 2, 3])
+    x = randn(N, 2)
+    y = beta[0] + beta[1] * x[:, 0] + beta[2] * x[:, 1] + randn(N)
+    X = jnp.insert(x, 0, 1, axis=1)
+    print(jnp.linalg.inv(X.T @ X) @ X.T @ y)
+
+
 if __name__ == "__main__":
     sample()
+    sample2()
