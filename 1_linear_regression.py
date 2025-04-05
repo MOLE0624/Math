@@ -102,7 +102,24 @@ def sample3():
     plt.show()
 
 
+# t-distribution
+def sample4():
+    x = jnp.arange(-10, 10, 0.1)
+    plt.plot(
+        x, stats.norm.pdf(x, 0, 1), label="Regular Distribution", c="black", linewidth=1
+    )
+    for i in range(1, 11):
+        plt.plot(x, stats.t.pdf(x, i), label=f"df={i}", linewidth=0.8)
+    plt.legend(loc="upper right")
+    plt.title("How the t-distribution changes with degrees of freedom")
+    plt.xlabel("x")
+    plt.ylabel("Probability Density")
+    plt.grid(True)
+    plt.show()
+
+
 if __name__ == "__main__":
     sample()
     sample2()
     sample3()
+    sample4()
