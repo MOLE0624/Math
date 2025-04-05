@@ -118,8 +118,26 @@ def sample4():
     plt.show()
 
 
+def sample5():
+    N = 100
+    p = 1
+    iter_num = 100
+    for i in range(iter_num):
+        x = randn(N) + 2
+        e = randn(N)
+        y = x + 1 + e
+        b_1, b_0 = min_sq(x, y)
+        plt.scatter(b_0, b_1)
+    plt.axhline(y=1.0, c="black", linewidth=0.5)
+    plt.axvline(x=1.0, c="black", linewidth=0.5)
+    plt.xlabel("beta_0")
+    plt.ylabel("beta_1")
+    plt.show()
+
+
 if __name__ == "__main__":
     sample()
     sample2()
     sample3()
     sample4()
+    sample5()
