@@ -41,7 +41,7 @@ def gen_points(num_data: int = 100) -> Tuple[jnp.ndarray, jnp.ndarray]:
     key_a, key_x, key_noise = jax.random.split(key, 3)
 
     a = jax.random.normal(key_a, shape=(N,)) + 2.0  # slope ~ N(2, 1)
-    b = jnp.ndarray([randn()])  # intercept (scalar)
+    b = jnp.array([randn()])  # intercept (scalar)
     x = jax.random.normal(key_x, shape=(N,))
     y = a * x + b + jax.random.normal(key_noise, shape=(N,))  # y = ax + b + noise
     return (x, y)
@@ -135,9 +135,91 @@ def sample5():
     plt.show()
 
 
+def sample24():
+    N = 100
+    x = randn(N)
+    y = randn(N)
+    beta_1, beta_0 = min_sq(x, y)
+    RSS = np.linalg.norm(y - beta_0 - beta_1 * x) ** 2
+    RSE = np.sqrt(RSS / (N - 1 - 1))
+    B_0 = (x.T @ x / N) / np.linalg.norm(x - np.mean(x)) ** 2
+    B_1 = 1 / np.linalg.norm(x - np.mean(x)) ** 2
+    se_0 = RSE * np.sqrt(B_0)
+    se_1 = RSE * np.sqrt(B_1)
+    t_0 = beta_0 / se_0
+    t_1 = beta_1 / se_1
+    p_0 = 2 * (1 - stats.t.cdf(np.abs(t_0), N - 2))
+    p_1 = 2 * (1 - stats.t.cdf(np.abs(t_1), N - 2))
+
+    print("intercept      :", beta_0, se_0, t_0, p_0)
+    print("regression coef:", beta_1, se_1, t_1, p_1)
+
+    from sklearn import linear_model
+
+    reg = linear_model.LinearRegression()
+    x = x.reshape(-1, 1)
+    y = y.reshape(-1, 1)
+    reg.fit(x, y)
+
+    print("regression coef beta_1:", reg.coef_, ", intercept beta_0:", reg.intercept_)
+
+    import statsmodels.api as sm
+
+    X = np.insert(x, 0, 1, axis=1)
+    model = sm.OLS(y, x)
+    res = model.fit()
+    print(res.summary())
+
+
+def sample25():
+    N = 100
+    r = 1000
+    T = []
+    for i in range(r):
+        x = randn(N)
+        y = randn(N)
+        beta_1, beta_0 = min_sq(x, y)
+        pre_y = beta_0 + beta_1 * x
+        RSS = np.linalg.norm(y - beta_0 - beta_1 * x) ** 2
+        RSE = np.sqrt(RSS / (N - 1 - 1))
+        B_0 = (x.T @ x / N) / np.linalg.norm(x - np.mean(x)) ** 2
+        B_1 = 1 / np.linalg.norm(x - np.mean(x)) ** 2
+        se_1 = RSE * np.sqrt(B_1)
+        T.append(beta_1 / se_1)
+    plt.hist(T, bins=20, range=(-3, 3), density=True)
+    x = np.linspace(-4, 4, 400)
+    plt.plot(x, stats.t.pdf(x, 1))
+    plt.title("Cases in which the null hypothesis is true")
+    plt.xlabel("t value")
+    plt.ylabel("Probability Density")
+    plt.show()
+
+    T = []
+    for i in range(r):
+        x = randn(N)
+        y = 0.1 * x + randn(N)
+        beta_1, beta_0 = min_sq(x, y)
+        pre_y = beta_0 + beta_1 * x
+        RSS = np.linalg.norm(y - beta_0 - beta_1 * x) ** 2
+        RSE = np.sqrt(RSS / (N - 1 - 1))
+        B_0 = (x.T @ x / N) / np.linalg.norm(x - np.mean(x)) ** 2
+        B_1 = 1 / np.linalg.norm(x - np.mean(x)) ** 2
+        se_1 = RSE * np.sqrt(B_1)
+        T.append(beta_1 / se_1)
+    plt.hist(T, bins=20, range=(-3, 3), density=True)
+    x = np.linspace(-4, 4, 400)
+    plt.plot(x, stats.t.pdf(x, 1))
+    plt.title("Cases in which the null hypothesis is NOT true")
+    plt.xlabel("t value")
+    plt.ylabel("Probability Density")
+    plt.show()
+
+
 if __name__ == "__main__":
-    sample()
-    sample2()
-    sample3()
-    sample4()
-    sample5()
+    # sample()
+    # sample2()
+    # sample3()
+    # sample4()
+    # sample5()
+    # sample24()
+    # sample25()
